@@ -25,6 +25,7 @@ extern "C" {
     #include "x15.h"
     #include "fresh.h"
     #include "equi.h"
+    #include "neoscrypt.h"
 }
 
 #include "boolberry.h"
@@ -552,6 +553,25 @@ NAN_METHOD(fresh) {
     info.GetReturnValue().Set(Nan::NewBuffer(output, 32).ToLocalChecked());
 }
 
+NAN_METHOD(neoscrypt) {
+    if (info.Length() > 2) {
+        return THROW_ERROR_EXCEPTION("You must provide two arguments.");
+    }
+
+    Local<Object> target = Nan::To<Object>(info[0]).ToLocalChecked();
+
+    if(!Buffer::HasInstance(target)) {
+        return THROW_ERROR_EXCEPTION("Argument should be a buffer object.");
+    }
+
+    unsigned char *input =  (unsigned char*) Buffer::Data(target);
+    unsigned char *output =  (unsigned char*) malloc(sizeof(char) * 32);
+
+    neoscrypt(input, output, 0);
+
+    info.GetReturnValue().Set(Nan::NewBuffer((char*) output, 32).ToLocalChecked());
+}
+
 NAN_MODULE_INIT(init) {
     Nan::Set(target, Nan::New("quark").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(quark)).ToLocalChecked());
     Nan::Set(target, Nan::New("x11").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(x11)).ToLocalChecked());
@@ -576,6 +596,7 @@ NAN_MODULE_INIT(init) {
     Nan::Set(target, Nan::New("x15").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(x15)).ToLocalChecked());
     Nan::Set(target, Nan::New("fresh").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(fresh)).ToLocalChecked());
     Nan::Set(target, Nan::New("equihash").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(equihash)).ToLocalChecked());
+    Nan::Set(target, Nan::New("neoscrypt").ToLocalChecked(),Nan::GetFunction(Nan::New<FunctionTemplate>(neoscrypt)).ToLocalChecked());
 }
 
 NODE_MODULE(multihashing, init)

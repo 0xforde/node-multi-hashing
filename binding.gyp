@@ -12,6 +12,7 @@
                 "equi.c",
                 "quark.c",
                 "bcrypt.c",
+                "neoscrypt.c",
                 "groestl.c",
                 "blake.c",
                 "fugue.c",
